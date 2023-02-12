@@ -3,6 +3,8 @@
 """ Module: file_storage.py """
 
 import json
+from models.base_model import BaseModel
+from models.user import User
 
 
 class FileStorage:
@@ -21,14 +23,17 @@ class FileStorage:
     def new(self, obj):
         """ sets in __objects the obj with key <obj class name>.id """
 
-        key = type(obj).__name__ + "." + obj.id
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
         FileStorage.__objects[key] = obj
 
     def save(self):
         """ serializes __objects to the JSON file (path: __file_path) """
 
-        with open(FileStorage.__file_path, 'w', encoding='utf-8') as f:
-            json.dump(FileStorage.__objects, f)
+        dic = {}
+        for key, value in FileStorage.__objects.items():
+            dic[key] = value.to_dict()
+        with open(FileStorage.__file_path, "w", encoding="UTF-8") as f:
+            f.write(json.dumps(dic))
 
     def reload(self):
         """
@@ -37,7 +42,13 @@ class FileStorage:
         """
 
         try:
-            with open(FileStorage.__file_path, 'r', encoding='utf-8') as f:
-                FileStorage.__objects = json.load(f)
+            with open(FileStorage.__file_path, "r", encoding="UTF-8") as f:
+                dic = json.loads(f.read())
+                for key, value in dic.items():
+                    class_name = value["__class__"]
+                    if class_name == "User":
+                        FileStorage.__objects[key] = User(**value)
+                    else:
+                        FileStorage.__objects[key] = eval("{}(**value)".format(class_name))
         except FileNotFoundError:
             pass

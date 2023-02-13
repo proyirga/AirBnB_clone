@@ -1,10 +1,12 @@
-"""Testing the `FileStorage` module."""
+#!/usr/bin/env python3
+
+#Testing the `FileStorage` module.
 import unittest
 import os
 import json
 from models.base_model import BaseModel
 from models.user import User
-from models.filestorage import FileStorage
+from models.engine.file_storage import FileStorage
 
 class TestFileStorage(unittest.TestCase):
     """ test for class FileStorage """

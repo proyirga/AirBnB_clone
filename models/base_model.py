@@ -3,7 +3,7 @@
 
 import uuid
 from datetime import datetime
-from models.engine.file_storage import storage
+from models import storage
 
 
 class BaseModel:

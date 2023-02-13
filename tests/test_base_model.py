@@ -10,10 +10,6 @@ class TestBaseModel(unittest.TestCase):
         """ Set up method to run before each test case """
         self.base_model = BaseModel()
 
-    def tearDown(self):
-        """ Tear down method to run after each test case """
-        storage.delete(self.base_model)
-
     def test_instantiation(self):
         """ Test instantiation of BaseModel """
         self.assertIsInstance(self.base_model, BaseModel)

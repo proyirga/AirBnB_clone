@@ -2,7 +2,7 @@
 import unittest
 import os
 import json
-from models.basemodel import BaseModel
+from models.base_model import BaseModel
 from models.user import User
 from models.filestorage import FileStorage
 

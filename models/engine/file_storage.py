@@ -12,6 +12,7 @@ class FileStorage:
     serializes instances to a JSON file and
     deserializes JSON file to instances
     """
+
     __file_path = "file.json"
     __objects = {}
 
@@ -22,18 +23,16 @@ class FileStorage:
 
     def new(self, obj):
         """ sets in __objects the obj with key <obj class name>.id """
-
+    
         key = "{}.{}".format(obj.__class__.__name__, obj.id)
         FileStorage.__objects[key] = obj
 
     def save(self):
         """ serializes __objects to the JSON file (path: __file_path) """
 
-        my_dict = {}
-        for key, value in FileStorage.__objects.items():
-            my_dict[key] = value.to_dict()
-        with open(FileStorage.__file_path, "w", encoding="UTF-8") as f:
-            f.write(json.dumps(my_dict))
+        with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
+            d = {k: v.to_dict() for k, v in FileStorage.__objects.items()}
+            json.dump(d, f)
 
     def classes(self):
         """Returns a dictionary of valid classes and their references"""
@@ -59,18 +58,16 @@ class FileStorage:
         deserializes the JSON file to __objects only if the JSON
         file exists; otherwise, does nothing
         """
-
-        try:
-            with open(FileStorage.__file_path, "r", encoding="UTF-8") as f:
-                my_dict = json.loads(f.read())
-                for key, value in my_dict.items():
-                    class_name = value["__class__"]
-                    if class_name == "User":
-                        FileStorage.__objects[key] = User(**value)
-                    else:
-                        FileStorage.__objects[key] = eval("{}(**value)".format(class_name))
-        except FileNotFoundError:
-            pass
+    def reload(self):
+        """Reloads the stored objects"""
+        if not os.path.isfile(FileStorage.__file_path):
+            return
+        with open(FileStorage.__file_path, "r", encoding="utf-8") as f:
+            obj_dict = json.load(f)
+            obj_dict = {k: self.classes()[v["__class__"]](**v)
+                        for k, v in obj_dict.items()}
+            # TODO: should this overwrite or insert?
+            FileStorage.__objects = obj_dict
 
     def attributes(self):
         """Returns the valid attributes and their types for classname"""

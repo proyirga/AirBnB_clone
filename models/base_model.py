@@ -7,7 +7,6 @@ from models import storage
 
 
 class BaseModel:
-
     """Class from which all other classes will inherit"""
 
     def __init__(self, *args, **kwargs):

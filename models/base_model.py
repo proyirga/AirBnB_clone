@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """This script is the base model"""
 
-import storage
+import models
 import uuid
 from datetime import datetime
 

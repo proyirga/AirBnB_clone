@@ -58,15 +58,13 @@ class FileStorage:
         deserializes the JSON file to __objects only if the JSON
         file exists; otherwise, does nothing
         """
-    def reload(self):
-        """Reloads the stored objects"""
+
         if not os.path.isfile(FileStorage.__file_path):
             return
         with open(FileStorage.__file_path, "r", encoding="utf-8") as f:
             obj_dict = json.load(f)
             obj_dict = {k: self.classes()[v["__class__"]](**v)
                         for k, v in obj_dict.items()}
-            # TODO: should this overwrite or insert?
             FileStorage.__objects = obj_dict
 
     def attributes(self):

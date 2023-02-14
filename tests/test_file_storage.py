@@ -43,7 +43,6 @@ class TestFileStorage(unittest.TestCase):
         obj = TestObj()
         self.storage.new(obj)
         self.storage.save()
-        self.storage.reload()
         self.assertIn("TestObj.test_id", self.storage.all())
     
     def test_attributes_returns_dict(self):

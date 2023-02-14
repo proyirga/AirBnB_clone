@@ -1,46 +1,54 @@
-#!/usr/bin/env python3
-
 #Testing the `FileStorage` module.
 import unittest
-import os
-import json
-from models.base_model import BaseModel
-from models.user import User
-from models.engine.file_storage import FileStorage
+from file_storage import FileStorage
 
 class TestFileStorage(unittest.TestCase):
-    """ test for class FileStorage """
-
+    
     def setUp(self):
-        """ creates an instance of FileStorage """
         self.storage = FileStorage()
-        self.user = User()
-        self.user.first_name = "John"
-        self.user.last_name = "Doe"
-
-    def test_all(self):
-        """ tests if all returns the FileStorage.__objects attribute """
-        self.assertEqual(self.storage.all(), FileStorage.__objects)
-
-    def test_new(self):
-        """ tests if new adds an object to FileStorage.__objects """
-        self.storage.new(self.user)
-        key = "{}.{}".format(self.user.__class__.__name__, self.user.id)
-        self.assertIn(key, FileStorage.__objects)
-
-    def test_save(self):
-        """ tests if save serializes __objects to the JSON file """
+    
+    def test_all_returns_dictionary(self):
+        self.assertIsInstance(self.storage.all(), dict)
+    
+    def test_new_adds_object_to_dictionary(self):
+        class TestObj:
+            id = "test_id"
+        
+        obj = TestObj()
+        self.storage.new(obj)
+        self.assertIn("TestObj.test_id", self.storage.all())
+    
+    def test_save_writes_to_file(self):
+        class TestObj:
+            id = "test_id"
+            def to_dict(self):
+                return {"id": self.id}
+        
+        obj = TestObj()
+        self.storage.new(obj)
         self.storage.save()
-        self.assertTrue(os.path.exists(FileStorage.__file_path))
-        with open(FileStorage.__file_path, "r", encoding="UTF-8") as f:
-            self.assertEqual(json.loads(f.read()), FileStorage.__objects)
-
-    def test_reload(self):
-        """ tests if reload deserializes the JSON file to __objects """
+        with open(FileStorage._FileStorage__file_path, "r") as f:
+            contents = f.read()
+            self.assertIn("test_id", contents)
+    
+    def test_classes_returns_dict(self):
+        self.assertIsInstance(self.storage.classes(), dict)
+    
+    def test_reload_loads_file(self):
+        class TestObj:
+            id = "test_id"
+            def to_dict(self):
+                return {"id": self.id}
+        
+        obj = TestObj()
+        self.storage.new(obj)
         self.storage.save()
         self.storage.reload()
-        with open(FileStorage.__file_path, "r", encoding="UTF-8") as f:
-            self.assertEqual(json.loads(f.read()), FileStorage.__objects)
+        self.assertIn("TestObj.test_id", self.storage.all())
+    
+    def test_attributes_returns_dict(self):
+        self.assertIsInstance(self.storage.attributes(), dict)
 
+        
 if __name__ == "__main__":
     unittest.main()

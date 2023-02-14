@@ -1,6 +1,6 @@
 #Testing the `FileStorage` module.
 import unittest
-from file_storage import FileStorage
+from models.engine.file_storage import FileStorage
 
 class TestFileStorage(unittest.TestCase):
     
